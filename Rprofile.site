@@ -21,6 +21,10 @@ server {
     directory_index on;
   }
 
+  location /dashboards/apiui {
+    redirect /dashboards/apiui/ 301;
+  }
+
   location / {
     redirect /dashboards/apiui/ 301;
   }
