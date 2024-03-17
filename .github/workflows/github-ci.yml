@@ -5,15 +5,30 @@ on:
   workflow_dispatch:
   
 jobs:
+  commit-hash:
+    name: Commit SHA
+    runs-on: ubuntu-latest
+    outputs:
+      sha7: ${{ steps.commit-hash.outputs.sha7 }}
+    steps:
+      - name: Get Commit SHA
+        id: commit-hash
+        run: echo "sha7=$(echo ${GITHUB_SHA} | cut -c1-7)" >> "$GITHUB_OUTPUT"
+
   docker:
-    uses: GBADsInformatics/DevopsWorkflows/.github/workflows/docker.yml@main
+    uses: GBADsInformatics/DevopsWorkflows/.github/workflows/docker.yml@2.0
     secrets: inherit
     with:
       IMAGE_NAME: apiui
 
   aws:
-    needs: docker
-    uses: GBADsInformatics/DevopsWorkflows/.github/workflows/aws.yml@main
+    needs: [commit-hash, docker]
+    uses: GBADsInformatics/DevopsWorkflows/.github/workflows/aws.yml@v2.0
     secrets: inherit
     with:
-      SERVICE_NAME: api-ui-dash-service
+      stack-name: api-ui-dash-stack
+      template-inputs: >-
+        ApplicationName=api-ui-dash,
+        DockerURI=gbadsinformatics/apiui:${{ needs.commit-hash.outputs.sha7 }},
+        BaseURL=/dashboards/apiui,
+        ListenerRulePriority=18
