@@ -34,8 +34,3 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     with:
       stack-name: api-ui-dash-stack
-      template-inputs: >-
-        ApplicationName=api-ui-dash,
-        DockerURI=gbadsinformatics/apiui:${{ needs.commit-hash.outputs.sha7 }},
-        BaseURL=/dashboards/apiui,
-        ListenerRulePriority=18
